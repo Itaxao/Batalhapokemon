@@ -1,7 +1,7 @@
 package br.com.cefetmg.batalhapokemon.model;
 
 import br.com.cefetmg.batalhapokemon.model.dtos.Ataque;
-import br.com.cefetmg.batalhapokemon.model.enums.Tipo;
+import br.com.cefetmg.batalhapokemon.model.enums.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ public abstract class Pokemon {
     private String apelido;
     protected String especie;
     protected Tipo tipo;
+    protected Sexo sexo;
     protected int nivelEvolucao; // 1 (Base), 2, 3 (Max)
 
     // Status dinâmicos
@@ -33,6 +34,22 @@ public abstract class Pokemon {
         this.apelido = apelido;
         this.especie = especie;
         this.tipo = tipo;
+        this.sexo = Sexo.gerarAleatorio();
+        this.nivelEvolucao = nivelEvolucao;
+        this.vidaMaxima = vidaMaxima;
+        this.vida = vidaMaxima;
+        this.ataque = ataque;
+        this.ataqueEsp = ataqueEspecial;
+        this.defesa = defesa;
+        this.defesaEsp = defesaEspecial;
+        this.velocidade = velocidade;
+    }
+
+    protected Pokemon(String apelido, String especie, Tipo tipo, Sexo sexo, int nivelEvolucao, double vidaMaxima, double ataque, double ataqueEspecial, double defesa, double defesaEspecial, double velocidade) {
+        this.apelido = apelido;
+        this.especie = especie;
+        this.tipo = tipo;
+        this.sexo = sexo;
         this.nivelEvolucao = nivelEvolucao;
         this.vidaMaxima = vidaMaxima;
         this.vida = vidaMaxima;
@@ -145,6 +162,7 @@ public abstract class Pokemon {
     public double getVidaMaxima() {
         return this.vidaMaxima;
     }
+    public Sexo getSexo() { return sexo; }
 
     // Construtor protegido para cópia de dados na evolução
     protected void copiarDados(Pokemon antigo) {
