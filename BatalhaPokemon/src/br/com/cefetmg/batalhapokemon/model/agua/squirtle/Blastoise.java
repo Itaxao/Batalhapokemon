@@ -29,7 +29,5 @@ public class Blastoise extends Pokemon {
     }
 
     @Override
-    public void realizarSom() {
-        System.out.println("Blastoise! Blastoise!");
-    }
+    public void realizarSom() { System.out.println("Blastoise! Blastoise!"); }
 }

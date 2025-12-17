@@ -12,6 +12,15 @@ public enum Sexo {
         this.nome = nome;
     }
 
+    // Getters públicos
+    public char getSimbolo() {
+        return simbolo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
     public static Sexo gerarAleatorio(){
         return Math.random() < 0.5 ? MACHO : FEMEA;
     }

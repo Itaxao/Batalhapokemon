@@ -72,8 +72,21 @@ public class Main {
         // LOOP DE BATALHA
         while (player.estaVivo() && bot.estaVivo()) {
             System.out.println("\n>>> Status Atual <<<");
-            System.out.printf("👤 %s (%s): %.0f/%.0f VIDA | %d Poções\n", player.getApelido(), player.getEspecie(), player.getVida(), player.getVidaMaxima(), player.getPocoes());
-            System.out.printf("🤖 %s (%s): %.0f/%.0f VIDA | %d Poções\n", bot.getApelido(), bot.getEspecie(), bot.getVida(), bot.getVidaMaxima(), bot.getPocoes());
+            System.out.printf("👤 %s (%s) %s: %.0f/%.0f VIDA | %d Poções\n",
+                    player.getApelido(),
+                    player.getEspecie(),
+                    obterSimboloSexo(player),
+                    player.getVida(),
+                    player.getVidaMaxima(),
+                    player.getPocoes());
+
+            System.out.printf("🤖 %s (%s) %s: %.0f/%.0f VIDA | %d Poções\n",
+                    bot.getApelido(),
+                    bot.getEspecie(),
+                    obterSimboloSexo(bot),
+                    bot.getVida(),
+                    bot.getVidaMaxima(),
+                    bot.getPocoes());
             System.out.println("-------------------------------------------");
 
             if (turnoPlayer) {
@@ -105,6 +118,14 @@ public class Main {
             System.out.println("💀 DERROTA... " + player.getApelido() + " desmaiou.");
         }
         System.out.println("===========================================");
+    }
+
+    // MÉTODO NOVO: Retorna o símbolo do sexo
+    private static String obterSimboloSexo(Pokemon pokemon) {
+        return switch (pokemon.getSexo()) {
+            case MACHO -> "♂";
+            case FEMEA -> "♀";
+        };
     }
 
     private static void realizarTurnoJogador(Scanner scanner, Pokemon atacante, Pokemon alvo) {

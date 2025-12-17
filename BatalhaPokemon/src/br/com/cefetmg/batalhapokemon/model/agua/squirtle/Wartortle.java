@@ -24,12 +24,8 @@ public class Wartortle extends Pokemon {
     }
 
     @Override
-    public Pokemon evoluir() {
-        return new Blastoise(this.getApelido(), this.getSexo());
-    }
+    public Pokemon evoluir() { return new Blastoise(this.getApelido(), this.getSexo()); }
 
     @Override
-    public void realizarSom() {
-        System.out.println("Wartortle Wartortle!");
-    }
+    public void realizarSom() { System.out.println("Wartortle Wartortle!"); }
 }

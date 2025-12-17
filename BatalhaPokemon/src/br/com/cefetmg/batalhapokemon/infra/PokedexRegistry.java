@@ -3,6 +3,8 @@ package br.com.cefetmg.batalhapokemon.infra;
 import br.com.cefetmg.batalhapokemon.model.Pokemon;
 import java.io.File;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class PokedexRegistry {
@@ -14,13 +16,14 @@ public class PokedexRegistry {
      * @param pacoteBase Ex: "br.com.cefetmg.batalhapokemon.model"
      */
     public static void inicializar(String pacoteBase) {
-        REGISTRO.clear(); // Limpa registros anteriores se houver reinício
+        REGISTRO.clear();
         System.out.println("🔍 Iniciando varredura recursiva em: " + pacoteBase);
 
         try {
             Set<Class<?>> classesEncontradas = new HashSet<>();
-            // Inicia a busca recursiva
             buscarClassesRecursivamente(pacoteBase, classesEncontradas);
+
+            System.out.println("📦 Total de classes encontradas: " + classesEncontradas.size());
 
             for (Class<?> clazz : classesEncontradas) {
                 // Verifica se é filho de Pokemon e não é a própria classe Pokemon
@@ -39,37 +42,34 @@ public class PokedexRegistry {
     private static void registrarSeForEstagioUm(Class<?> clazz) {
         try {
             // Instancia um objeto temporário para verificar os dados
-            // IMPORTANTE: A classe DEVE ter um construtor público que aceita String (apelido)
             Pokemon temp = (Pokemon) clazz.getConstructor(String.class).newInstance("TEMP_CHECK");
 
             // REGRA: Só registra se for Estágio 1 (Base)
-            // Se for estágio 2 ou 3 (evoluções), ignoramos no menu inicial
             if (temp.getNivelEvolucao() == 1) {
                 REGISTRO.put(temp.getEspecie(), (Class<? extends Pokemon>) clazz);
-                // Opcional: Logar o que foi encontrado (útil para debug dos alunos)
-                // System.out.println("   -> Registrado: " + temp.getEspecie() + " (Pacote: " + clazz.getPackageName() + ")");
+                System.out.println("   -> Registrado: " + temp.getEspecie());
             }
         } catch (NoSuchMethodException e) {
-            // Ignora silenciosamente classes que não seguem o padrão (ex: classes abstratas intermediárias)
+            // Ignora classes sem construtor público(String)
         } catch (Exception e) {
             System.err.println("   ⚠️ Erro ao verificar classe " + clazz.getSimpleName() + ": " + e.getMessage());
         }
     }
 
-    /**
-     * Método Recursivo que varre diretórios e subdiretórios buscando .class
-     */
     private static void buscarClassesRecursivamente(String nomePacote, Set<Class<?>> classesDestino) throws Exception {
         String path = nomePacote.replace('.', '/');
         URL resource = Thread.currentThread().getContextClassLoader().getResource(path);
 
         if (resource == null) {
-            // Pacote não existe ou está vazio
             return;
         }
 
-        File diretorio = new File(resource.getFile());
+        // CORREÇÃO: Decodifica a URL para lidar com espaços e caracteres especiais
+        String caminhoDecodificado = URLDecoder.decode(resource.getFile(), StandardCharsets.UTF_8);
+        File diretorio = new File(caminhoDecodificado);
+
         if (!diretorio.exists()) {
+            System.err.println("⚠️ Diretório não encontrado: " + diretorio.getAbsolutePath());
             return;
         }
 
@@ -78,20 +78,16 @@ public class PokedexRegistry {
 
         for (File arquivo : arquivos) {
             if (arquivo.isDirectory()) {
-                // RECURSIVIDADE: Se for pasta, mergulha nela adicionando ao nome do pacote
-                // Ex: com.pokemon.model -> com.pokemon.model.fogo
+                // RECURSIVIDADE: Se for pasta, mergulha nela
                 buscarClassesRecursivamente(nomePacote + "." + arquivo.getName(), classesDestino);
-            } else {
-                if (arquivo.getName().endsWith(".class")) {
-                    // Remove a extensão .class para obter o nome da classe
-                    String nomeClasse = nomePacote + '.' + arquivo.getName().substring(0, arquivo.getName().length() - 6);
+            } else if (arquivo.getName().endsWith(".class")) {
+                // Remove a extensão .class para obter o nome da classe
+                String nomeClasse = nomePacote + '.' + arquivo.getName().substring(0, arquivo.getName().length() - 6);
 
-                    try {
-                        // Tenta carregar a classe
-                        classesDestino.add(Class.forName(nomeClasse));
-                    } catch (ClassNotFoundException e) {
-                        // Ignora arquivos que não são classes carregáveis
-                    }
+                try {
+                    classesDestino.add(Class.forName(nomeClasse));
+                } catch (ClassNotFoundException e) {
+                    // Ignora arquivos que não são classes carregáveis
                 }
             }
         }
@@ -111,7 +107,7 @@ public class PokedexRegistry {
 
     public static List<String> getEspeciesDisponiveis() {
         List<String> lista = new ArrayList<>(REGISTRO.keySet());
-        Collections.sort(lista); // Retorna em ordem alfabética para o menu ficar bonito
+        Collections.sort(lista);
         return lista;
     }
 }
