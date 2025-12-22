@@ -2,32 +2,36 @@ package br.com.cefetmg.batalhapokemon.model.agua.squirtle;
 
 import br.com.cefetmg.batalhapokemon.model.Pokemon;
 import br.com.cefetmg.batalhapokemon.model.enums.Sexo;
-import br.com.cefetmg.batalhapokemon.model.enums.Tipo;
 import br.com.cefetmg.batalhapokemon.model.dtos.Ataque;
+import br.com.cefetmg.batalhapokemon.model.enums.Tipo;
 
-public class Blastoise extends Pokemon {
+public class Blastoise extends Wartortle {
+    public Blastoise(String apelido, Sexo sexo) {
+        super(apelido, sexo);
+        this.especie = "Blastoise";
+        this.nivelEvolucao = 3;
+        this.vidaMaxima = 79;
+        this.vida = 79;
+        this.ataque = 83;
+        this.ataqueEsp = 85;
+        this.defesa = 100;
+        this.defesaEsp = 105;
+        this.velocidade = 78;
 
-    public Blastoise(String apelido) {
-        super(apelido, "Blastoise", Tipo.AGUA, 3, 79, 83, 85, 100, 105, 78);
-        adicionarAtaque(new Ataque("Water Pulse", 60, Tipo.AGUA));
-        adicionarAtaque(new Ataque("Protect", 0, Tipo.NORMAL));
+        this.getAtaques().clear();
         adicionarAtaque(new Ataque("Hydro Pump", 110, Tipo.AGUA));
-        adicionarAtaque(new Ataque("Shell Smash", 0, Tipo.AGUA));
-    }
-
-    protected Blastoise(String apelido, Sexo sexo) {
-        super(apelido, "Blastoise", Tipo.AGUA, sexo, 3, 79, 83, 85, 100, 105, 78);
-        adicionarAtaque(new Ataque("Water Pulse", 60, Tipo.AGUA));
-        adicionarAtaque(new Ataque("Protect", 0, Tipo.NORMAL));
-        adicionarAtaque(new Ataque("Hydro Pump", 110, Tipo.AGUA));
-        adicionarAtaque(new Ataque("Shell Smash", 0, Tipo.AGUA));
+        adicionarAtaque(new Ataque("Skull Bash", 130, Tipo.NORMAL));
+        adicionarAtaque(new Ataque("Hydro Cannon", 150, Tipo.AGUA));
+        adicionarAtaque(new Ataque("Flash Cannon", 80, Tipo.NORMAL));
     }
 
     @Override
     public Pokemon evoluir() {
-        return this; // Blastoise é a evolução final, não evolui mais
+        return this;
     }
 
     @Override
-    public void realizarSom() { System.out.println("Blastoise! Blastoise!"); }
+    public void realizarSom() {
+        System.out.println("BLASTOISE! BLAST!");
+    }
 }

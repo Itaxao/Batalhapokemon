@@ -1,23 +1,23 @@
-package br.com.cefetmg.batalhapokemon.model.agua.squirtle;
+package br.com.cefetmg.batalhapokemon.model.agua.mudkip;
 
 import br.com.cefetmg.batalhapokemon.model.Pokemon;
 import br.com.cefetmg.batalhapokemon.model.enums.Tipo;
 import br.com.cefetmg.batalhapokemon.model.dtos.Ataque;
 
-public class Squirtle extends Pokemon {
-    public Squirtle(String apelido) {
-        super(apelido, "Squirtle", Tipo.AGUA, 1, 44, 48, 50, 65, 64, 43);
+public class Mudkip extends Pokemon {
+    public Mudkip(String apelido) {
+        super(apelido, "Mudkip", Tipo.AGUA, 1, 50, 70, 50, 50, 50, 40);
         adicionarAtaque(new Ataque("Tackle", 40, Tipo.NORMAL));
         adicionarAtaque(new Ataque("Water Gun", 40, Tipo.AGUA));
     }
 
     @Override
     public Pokemon evoluir() {
-        return new Wartortle(this.getApelido(), this.getSexo());
+        return new Marshtomp(this.getApelido(), this.getSexo());
     }
 
     @Override
     public void realizarSom() {
-        System.out.println("Squirtle! Squirtle!");
+        System.out.println("Mudkip! Kip kip!");
     }
 }

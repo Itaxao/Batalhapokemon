@@ -88,7 +88,6 @@ public class Main {
                     bot.getVidaMaxima(),
                     bot.getPocoes());
             System.out.println("-------------------------------------------");
-
             if (turnoPlayer) {
                 realizarTurnoJogador(scanner, player, bot);
             } else {
@@ -172,12 +171,35 @@ public class Main {
     private static void realizarTurnoBot(Pokemon atacante, Pokemon alvo) {
         System.out.println("\n🤖 Vez do Computador...");
 
-        // IA Simples: Se vida < 30% e tem poção, cura. Senão, ataca aleatoriamente.
-        if (atacante.getVida() < (atacante.getVidaMaxima() * 0.3) && atacante.getPocoes() > 0) {
+        // IA Melhorada com Sistema de Defesa
+        double percentualVida = atacante.getVida() / atacante.getVidaMaxima();
+
+        if (percentualVida < 0.25 && atacante.getPocoes() > 0) {
+            // Vida crítica: cura
             atacante.usarPocao();
+        } else if (percentualVida < 0.4 && atacante.getPocoes() > 0 && new Random().nextBoolean()) {
+            // Vida baixa: 50% chance de curar
+            atacante.usarPocao();
+        } else if (percentualVida < 0.3 && !atacante.estaDefendendo() && new Random().nextInt(10) < 3) {
+            // Vida baixa: 30% chance de defender
+            atacante.defender();
         } else {
+            // Ataca normalmente
             List<Ataque> ataques = atacante.getAtaques();
-            Ataque ataqueEscolhido = ataques.get(new Random().nextInt(ataques.size()));
+            // Tenta escolher um ataque forte (>= 80 de poder)
+            List<Ataque> ataquesFortes = ataques.stream()
+                    .filter(a -> a.poder() >= 80)
+                    .toList();
+
+            Ataque ataqueEscolhido;
+            if (!ataquesFortes.isEmpty() && new Random().nextInt(10) < 6) {
+                // 60% chance de usar ataque forte se disponível
+                ataqueEscolhido = ataquesFortes.get(new Random().nextInt(ataquesFortes.size()));
+            } else {
+                // Ataque aleatório
+                ataqueEscolhido = ataques.get(new Random().nextInt(ataques.size()));
+            }
+
             atacante.atacar(alvo, ataqueEscolhido);
         }
     }
