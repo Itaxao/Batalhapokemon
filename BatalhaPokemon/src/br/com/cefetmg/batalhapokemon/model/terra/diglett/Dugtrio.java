@@ -10,7 +10,7 @@ public class Dugtrio extends Diglett {
         super(apelido);
         this.especie = "Dugtrio";
         this.nivelEvolucao = 2;
-        this.vidaMaxima = 35;
+        this.vidaMaxima = 59;
         this.vida = 35;
         this.ataque = 100;
         this.ataqueEsp = 50;

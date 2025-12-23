@@ -24,7 +24,7 @@ public abstract class Pokemon {
     protected int experiencia = 0;
     protected int pocoes = 0;
     protected int contadorAtaquesBemSucedidos = 0;
-    protected boolean defendendo = false; // NOVO: Sistema de defesa
+    protected boolean defendendo = false;
 
     private List<Ataque> ataques = new ArrayList<>();
 
@@ -63,7 +63,6 @@ public abstract class Pokemon {
         this.velocidade = velocidade;
     }
 
-    // NOVO: Sistema de Defesa
     public void defender() {
         this.defendendo = true;
         System.out.println("🛡️ " + this.apelido + " assumiu postura defensiva!");
@@ -88,30 +87,52 @@ public abstract class Pokemon {
             System.out.println("😐 Dano normal.");
         }
 
-        // 1. Dano base: considera ataque do atacante e poder do golpe
-        double nivel = (this.nivelEvolucao * 10) + 30; // Nível 1=50, Nível 2=60, Nível 3=70
-        double danoBase = ((2 * nivel / 5 + 2) * this.ataque * golpe.poder()) / 80;
+        // ============================================================
+        // NOVA FÓRMULA DE DANO BALANCEADA
+        // ============================================================
 
-        // 2. Aplica defesa do oponente
+        // 1. Poder base do ataque (normalizado)
+        // Ataques fracos (20-40) = ~10-15 de dano
+        // Ataques médios (60-90) = ~20-30 de dano
+        // Ataques fortes (100-150) = ~35-50 de dano
+        double poderNormalizado = golpe.poder() * 0.35;
+
+        // 2. Bônus de ataque do Pokémon (15% do stat de ataque)
+        double bonusAtaque = this.ataque * 0.15;
+
+        // 3. Dano base = poder + bônus
+        double danoBase = poderNormalizado + bonusAtaque;
+
+        // 4. Redução por defesa (quanto maior a defesa, menor o dano)
+        // Defesa baixa (30-50) = ~85% do dano passa
+        // Defesa média (60-80) = ~75% do dano passa
+        // Defesa alta (90-110) = ~65% do dano passa
         double defesaOponente = oponente.getDefesa();
 
-        // Se estiver defendendo, defesa é dobrada
+        // Se estiver defendendo, defesa é aumentada em 50%
         if (oponente.defendendo) {
-            defesaOponente *= 2;
+            defesaOponente *= 1.5;
             System.out.println("🛡️ " + oponente.getApelido() + " bloqueou parte do ataque!");
         }
 
-        // 3. Calcula dano após defesa
-        double danoAposDefesa = danoBase / (defesaOponente / 50 + 1);
+        // Fórmula de redução: quanto maior a defesa, maior a redução
+        // Fórmula: dano * (100 / (100 + defesa * 0.4))
+        double fatorDefesa = 100.0 / (100.0 + (defesaOponente * 0.4));
+        double danoAposDefesa = danoBase * fatorDefesa;
 
-        // 4. Adiciona variação aleatória (85% a 100% do dano)
-        double variacao = 0.85 + (Math.random() * 0.15);
+        // 5. Variação aleatória (90% a 110% do dano)
+        Random random = new Random();
+        double variacao = 0.90 + (random.nextDouble() * 0.20);
         double danoComVariacao = danoAposDefesa * variacao;
 
-        // 5. Aplica multiplicador de tipo
+        // 6. Aplica multiplicador de tipo
         double danoFinal = danoComVariacao * multiplicador;
 
-        // 6. Garante dano mínimo de 1
+        // 7. Bônus de nível evolutivo (Pokémons evoluídos causam mais dano)
+        double bonusNivel = 1.0 + ((this.nivelEvolucao - 1) * 0.15);
+        danoFinal *= bonusNivel;
+
+        // 8. Arredonda e garante dano mínimo de 1
         danoFinal = Math.max(1, Math.round(danoFinal));
 
         oponente.receberDano(danoFinal);
@@ -142,7 +163,6 @@ public abstract class Pokemon {
             if (this.vida > this.vidaMaxima) this.vida = this.vidaMaxima;
             System.out.printf("✨ %s usou uma poção! Recuperou %.1f VIDA. (Restam %d poções)%n",
                     this.apelido, cura, this.pocoes);
-            // Remove status de defesa ao usar poção
             this.defendendo = false;
             return true;
         } else {
